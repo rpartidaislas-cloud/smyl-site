@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SMYL · Tu clínica dental, del primer mensaje a la cita</title>
+<meta name="description" content="SMYL atiende a tus pacientes por WhatsApp, Messenger e Instagram con un asistente de IA, agenda la consulta y te deja listos el expediente, la simulación de sonrisa y la propuesta. Tú tomas la decisión clínica.">
+<meta property="og:title" content="SMYL · Tu clínica dental, del primer mensaje a la cita">
+<meta property="og:description" content="Agenda, expediente, mensajería con IA, diseño de sonrisa, radiografías y cobros en un solo lugar. Hecho en México.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://smyldesign.ai/icons/smyl_pwa.png">
+<link rel="icon" href="icons/smyl_pwa.png">
+<link rel="apple-touch-icon" href="icons/smyl_pwa.png">
+<link rel="canonical" href="https://smyldesign.ai/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   TOKENS — marca SMYL (degradado del logotipo) + tinta del panel
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --grad-1:#27D7E7; --grad-2:#3F8CFF; --grad-3:#7A4DFF;
+  --gradient:linear-gradient(135deg,var(--grad-1),var(--grad-2) 55%,var(--grad-3));
+  --gradient-text:linear-gradient(135deg,#0E93A3,var(--grad-2) 55%,var(--grad-3));
+  --primary:#2563EB; --primary-ink:#1D4ED8; --primary-soft:#EEF4FF;
+  --ink:#0B1B2E; --ink-2:#526174; --ink-3:#738094;
+  --canvas:#F4F7FB; --surface:#FFFFFF; --surface-soft:#F8FAFC;
+  --line:#D9E2EC; --line-strong:#BAC7D5;
+  --success:#087A55; --wa:#25D366;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:24px;
+  --shadow-sm:0 1px 2px rgba(11,27,46,.06);
+  --shadow-md:0 8px 24px rgba(11,27,46,.08);
+  --shadow-lg:0 24px 60px rgba(11,27,46,.14);
+  --font:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --max:1152px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--canvas);color:var(--ink);font:16px/1.6 var(--font);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{margin:0;letter-spacing:-.02em;text-wrap:balance}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:4px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.wrap{max-width:var(--max);margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+section{padding-block:88px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);margin-bottom:14px}
+.h2{font-size:clamp(30px,4vw,44px);font-weight:800;line-height:1.1}
+.sub{font-size:18px;color:var(--ink-2);max-width:60ch;margin-top:16px}
+.center{text-align:center}.center .sub{margin-inline:auto}
+.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* Botones (port de shadcn/button: default y outline) */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 20px;border-radius:10px;font-weight:600;font-size:15px;text-decoration:none;border:1px solid transparent;transition:transform .15s,box-shadow .2s,background .2s,border-color .2s;white-space:nowrap}
+.btn .icon{width:18px;height:18px}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{background:#132C47;box-shadow:var(--shadow-md)}
+.btn-grad{background:var(--gradient);color:#fff;box-shadow:0 8px 20px rgba(63,140,255,.25)}
+.btn-grad:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(63,140,255,.32)}
+.btn-outline{background:var(--surface);color:var(--ink);border-color:var(--line-strong)}
+.btn-outline:hover{background:var(--surface-soft);border-color:var(--ink-3)}
+.btn-ghost{background:transparent;color:var(--ink-2)}
+.btn-ghost:hover{color:var(--ink);background:rgba(11,27,46,.05)}
+.btn-lg{height:52px;padding:0 26px;font-size:16px}
+.btn-full{width:100%}
+
+/* ═══ NAV (Centered Nav Header: logo izq · enlaces centro · acciones der; panel en móvil) ═══ */
+.nav{position:sticky;top:0;z-index:50;background:rgba(244,247,251,.86);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid transparent;transition:border-color .2s,background .2s}
+.nav.is-scrolled{border-bottom-color:var(--line);background:rgba(255,255,255,.9)}
+.nav-in{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:68px;gap:16px}
+.nav-logo img{height:30px;width:auto}
+.nav-links{display:flex;gap:4px;justify-content:center}
+.nav-links a{padding:8px 14px;border-radius:8px;font-size:14.5px;font-weight:500;color:var(--ink-2);text-decoration:none}
+.nav-links a:hover{color:var(--ink);background:rgba(11,27,46,.05)}
+.nav-actions{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.nav-actions .btn{height:40px;padding:0 16px;font-size:14.5px}
+.nav-burger{display:none;width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);align-items:center;justify-content:center}
+.nav-sheet{display:none}
+@media(max-width:900px){.nav-sheet{display:flex}}
+@media(max-width:900px){
+  .nav-in{grid-template-columns:1fr auto}
+  .nav-links,.nav-actions .btn-ghost,.nav-actions .btn-grad{display:none}
+  .nav-burger{display:inline-flex}
+  .nav-sheet{position:fixed;inset:68px 0 0 0;z-index:49;background:var(--surface);padding:24px max(20px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:6px;transform:translateY(-8px);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;overflow-y:auto}
+  .nav-sheet.open{opacity:1;transform:none;pointer-events:auto}
+  .nav-sheet a{display:block;padding:14px 8px;font-size:18px;font-weight:600;text-decoration:none;border-bottom:1px solid var(--line)}
+  .nav-sheet .btn{margin-top:14px;height:50px}
+}
+
+/* ═══ HERO (Hero Section with Device Mockups: titular con entrada, 2 CTA, captura + teléfono) ═══ */
+.hero{padding-block:72px 0;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-20% -10% auto -10%;height:70%;background:radial-gradient(60% 60% at 50% 20%,rgba(63,140,255,.14),transparent 70%),radial-gradient(40% 40% at 80% 10%,rgba(122,77,255,.10),transparent 70%),radial-gradient(40% 40% at 15% 30%,rgba(39,215,231,.12),transparent 70%);pointer-events:none}
+.hero .wrap{position:relative}
+.hero-copy{max-width:760px;margin:0 auto;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:500;color:var(--ink-2);box-shadow:var(--shadow-sm)}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--gradient);display:inline-block}
+.hero h1{font-size:clamp(36px,6vw,64px);font-weight:800;line-height:1.04;margin-top:22px}
+.hero h1 .grad{background:var(--gradient-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(17px,2vw,20px);margin:20px auto 0}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+.hero-fine{margin-top:14px;font-size:13px;color:var(--ink-3)}
+.reveal{animation:blurIn .7s cubic-bezier(.2,.7,.2,1) both}
+.reveal.d1{animation-delay:.08s}.reveal.d2{animation-delay:.16s}.reveal.d3{animation-delay:.24s}.reveal.d4{animation-delay:.36s}
+@keyframes blurIn{from{opacity:0;filter:blur(6px);transform:translateY(10px)}to{opacity:1;filter:blur(0);transform:none}}
+@media(prefers-reduced-motion:reduce){.reveal{animation:none}}
+
+/* Mockups construidos en CSS: panel de escritorio + teléfono con chat (datos de ejemplo) */
+.devices{position:relative;max-width:1040px;margin:64px auto 0;padding-bottom:40px}
+.desk{background:var(--surface);border:1px solid var(--line);border-radius:18px 18px 0 0;box-shadow:var(--shadow-lg);overflow:hidden;aspect-ratio:16/9.6;display:grid;grid-template-columns:200px 1fr;grid-template-rows:36px 1fr;font-size:12px}
+.desk-bar{grid-column:1/-1;height:36px;display:flex;align-items:center;gap:6px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--surface-soft)}
+.desk-bar i{width:10px;height:10px;border-radius:50%;background:#E2E8F0}
+.desk-bar span{margin-left:10px;height:18px;flex:1;max-width:320px;border-radius:6px;background:#EEF2F7}
+.desk-side{border-right:1px solid var(--line);padding:16px 12px;background:#FBFCFE}
+.desk-side img{height:18px;width:auto;margin:2px 0 18px 4px}
+.desk-side b{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;color:var(--ink-2);font-weight:500}
+.desk-side b.on{background:var(--primary-soft);color:var(--primary-ink);font-weight:600}
+.desk-side b i{width:14px;height:14px;border-radius:4px;background:currentColor;opacity:.25}
+.desk-main{padding:18px 20px;display:grid;grid-template-columns:1.25fr .9fr;gap:14px;align-content:start}
+.desk-main h4{grid-column:1/-1;margin:0 0 2px;font-size:15px;font-weight:700;letter-spacing:-.01em}
+.desk-main .date{grid-column:1/-1;color:var(--ink-3);margin-top:-6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow-sm)}
+.card h5{margin:0 0 10px;font-size:12px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em}
+.appt{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.appt:first-of-type{border-top:0}
+.appt time{font-weight:600;color:var(--ink)}
+.appt small{display:block;color:var(--ink-3)}
+.chip{font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;background:#E8F7F4;color:var(--success)}
+.chip.wait{background:#FFF8E7;color:#8A5A05}
+.stat{display:flex;flex-direction:column;gap:2px;padding:6px 0}
+.stat b{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.stat span{color:var(--ink-3)}
+.stat+.stat{border-top:1px solid var(--line)}
+.phone{position:absolute;right:4%;bottom:0;width:min(250px,34vw);aspect-ratio:9/18.6;background:#0B1B2E;border-radius:36px;padding:10px;box-shadow:0 30px 60px rgba(11,27,46,.35),inset 0 0 0 2px #1B2A3F}
+.phone-screen{background:#EFEAE2;border-radius:28px;height:100%;overflow:hidden;display:flex;flex-direction:column;font-size:11px}
+.phone-top{background:#075E54;color:#fff;padding:26px 12px 10px;display:flex;align-items:center;gap:8px}
+.phone-top i{width:26px;height:26px;border-radius:50%;background:#fff;color:#075E54;display:grid;place-items:center;font-weight:800;font-size:11px}
+.phone-top b{display:block;font-size:12px;line-height:1.1}
+.phone-top small{opacity:.8;font-size:10px}
+.chat{padding:10px 8px;display:flex;flex-direction:column;gap:6px;flex:1}
+.msg{max-width:88%;padding:7px 9px;border-radius:10px;line-height:1.35;box-shadow:0 1px 1px rgba(0,0,0,.06);position:relative}
+.msg.in{background:#fff;align-self:flex-start;border-top-left-radius:3px}
+.msg.out{background:#DCF8C6;align-self:flex-end;border-top-right-radius:3px}
+.msg time{display:block;text-align:right;font-size:9px;color:rgba(0,0,0,.4);margin-top:2px}
+.slots{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.slots span{background:#fff;border:1px solid #CFE9D9;color:#075E54;border-radius:6px;padding:2px 6px;font-weight:600;font-size:10px}
+.example{position:absolute;left:0;bottom:8px;font-size:11px;color:var(--ink-3);background:var(--surface);border:1px solid var(--line);padding:3px 8px;border-radius:6px}
+@media(max-width:900px){.desk{grid-template-columns:1fr}.desk-side{display:none}.desk-main{grid-template-columns:1fr}.desk-main .card:nth-child(4){display:none}.phone{width:min(210px,27vw)}}
+@media(max-width:600px){.devices{margin-top:44px;padding-bottom:24px}.phone{right:-6px;width:40vw;border-radius:26px;padding:7px}.phone-screen{border-radius:20px}.phone-top{padding-top:16px}.desk{aspect-ratio:auto;min-height:260px}}
+
+/* ═══ FRANJA DE CONFIANZA ═══ */
+.trust{padding-block:28px;border-block:1px solid var(--line);background:var(--surface)}
+.trust ul{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 40px;font-size:14px;font-weight:500;color:var(--ink-2)}
+.trust li{display:flex;align-items:center;gap:8px}
+.trust .icon{color:var(--primary);width:18px;height:18px}
+
+/* ═══ PILARES (Feature Section with Bento Grid: 1 grande + 5 pequeñas) ═══ */
+.bento{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:48px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0;transition:box-shadow .2s,transform .2s}
+.tile:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.tile .ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--primary-soft);color:var(--primary-ink)}
+.tile h3{font-size:18px;font-weight:700}
+.tile p{color:var(--ink-2);font-size:15px}
+.tile.big{grid-column:span 2;grid-row:span 2;background:linear-gradient(160deg,#0B1B2E,#132C47 60%,#1B3A5F);color:#fff;border:0;justify-content:flex-end;position:relative;overflow:hidden;min-height:380px}
+.tile.big .ico{background:rgba(255,255,255,.12);color:#fff}
+.tile.big h3{font-size:26px}
+.tile.big p{color:rgba(255,255,255,.78);font-size:16px;max-width:46ch}
+.tile.big .chan{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.tile.big .chan span{font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18)}
+.tile.big .bubbles{position:absolute;right:26px;top:26px;width:46%;display:flex;flex-direction:column;gap:8px;font-size:12.5px;line-height:1.35}
+.tile.big .bubbles div{padding:9px 12px;border-radius:12px;max-width:100%}
+.tile.big .bubbles .in{background:rgba(255,255,255,.14);align-self:flex-start;border-top-left-radius:4px}
+.tile.big .bubbles .out{background:#fff;color:var(--ink);align-self:flex-end;border-top-right-radius:4px}
+.tile.big .bubbles small{display:block;font-size:10.5px;opacity:.6;margin-top:3px}
+@media(max-width:900px){.bento{grid-template-columns:repeat(2,minmax(0,1fr))}.tile.big{grid-column:span 2;grid-row:span 1;min-height:0;padding-top:200px}.tile.big .bubbles{width:70%;right:20px;top:20px}}
+@media(max-width:560px){.bento{grid-template-columns:1fr}.tile.big{grid-column:span 1;padding-top:210px}.tile.big .bubbles{width:85%}}
+
+/* ═══ CÓMO FUNCIONA (Vertical How It Works Timeline: riel punteado, nodo numerado + icono) ═══ */
+.steps{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:start;margin-top:12px}
+.steps-head{position:sticky;top:96px}
+.timeline{position:relative;padding-left:4px}
+.timeline::before{content:"";position:absolute;left:27px;top:28px;bottom:28px;border-left:2px dashed var(--line-strong)}
+.step{position:relative;display:grid;grid-template-columns:56px 1fr;gap:20px;padding:0 0 36px}
+.step:last-child{padding-bottom:0}
+.node{width:56px;height:56px;border-radius:50%;background:var(--surface);border:2px solid var(--line-strong);display:grid;place-items:center;color:var(--primary-ink);position:relative;z-index:1}
+.node .icon{width:22px;height:22px}
+.node b{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.step h3{font-size:19px;font-weight:700;padding-top:12px}
+.step p{color:var(--ink-2);margin-top:6px}
+@media(max-width:860px){.steps{grid-template-columns:1fr;gap:36px}.steps-head{position:static}}
+
+/* ═══ IA CON CRITERIO ═══ */
+.criterio{background:var(--surface);border-block:1px solid var(--line)}
+.criterio .in{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.facts{display:grid;gap:14px}
+.fact{display:flex;gap:16px;align-items:flex-start;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface-soft)}
+.fact .ico{width:40px;height:40px;border-radius:10px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--primary-ink);flex:none}
+.fact b{display:block;font-size:16px}
+.fact span{color:var(--ink-2);font-size:14.5px}
+.fact a{color:var(--primary-ink)}
+@media(max-width:860px){.criterio .in{grid-template-columns:1fr;gap:32px}}
+
+/* ═══ TESTIMONIOS (port de Testimonial Section 3: 3 tarjetas, centro destacado, flechas y teclado) ═══ */
+.testi{--tp:var(--primary);background:var(--canvas)}
+.testi-row{display:flex;align-items:stretch;justify-content:center;width:100%;margin-top:48px}
+.gap{display:none;width:20px;position:relative;flex:none;background:repeating-linear-gradient(315deg,var(--line) 0,var(--line) 1px,transparent 0,transparent 50%);background-size:10px 10px;opacity:.6}
+.tcard{position:relative;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);padding:32px;width:100%;max-width:340px;flex:none;overflow:hidden;background:var(--surface);color:var(--ink-2)}
+.tcard.center{background:var(--tp);border-color:var(--tp);color:#fff;z-index:2}
+.tcard.side{display:none}
+.tcard .q{font-size:clamp(18px,1.6vw,22px);font-weight:500;margin-bottom:32px;line-height:1.35}
+.tcard.side .q{filter:blur(1px);opacity:.7}
+.tcard.side::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.9),rgba(255,255,255,.4),transparent)}
+.tcard.right::after{background:linear-gradient(270deg,rgba(255,255,255,.9),rgba(255,255,255,.4),transparent)}
+.who{display:flex;align-items:center;gap:14px;margin-top:auto}
+.who .av{width:48px;height:48px;border:2px solid var(--tp);display:grid;place-items:center;font-weight:700;background:var(--surface);color:var(--ink)}
+.tcard.center .who .av{border-color:#0B1B2E}
+.who b{display:block;font-size:17px;color:var(--ink)}
+.tcard.center .who b{color:#fff}
+.who span{font-size:13.5px;color:var(--ink-3)}
+.tcard.center .who span{color:#DBEAFE}
+.tnav{display:flex;justify-content:center;gap:24px;margin-top:40px}
+.tnav button{width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:var(--ink-3);display:grid;place-items:center}
+.tnav button:hover{background:var(--surface);color:var(--tp)}
+@media(min-width:768px){.gap{display:block}.tcard.side{display:flex}}
+
+/* ═══ PLANES (port de Pricing Section 1: tarjeta, badge Popular, precio, lista con check, CTA) ═══ */
+.plans{display:grid;gap:24px;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:48px}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:24px 0;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;overflow:hidden}
+.plan.popular{box-shadow:var(--shadow-lg);border-color:var(--line-strong)}
+.plan-head{padding:0 24px 8px;display:flex;flex-direction:column;gap:6px}
+.plan-head .row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.plan-head h3{font-size:22px;font-weight:700}
+.pbadge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--ink);color:#fff}
+.plan-head p{color:var(--ink-2);font-size:14px}
+.plan-body{padding:16px 24px 0;display:flex;flex-direction:column;flex:1}
+.price{display:flex;align-items:baseline;gap:8px;margin-bottom:24px}
+.price b{font-size:clamp(32px,3.6vw,44px);font-weight:800;letter-spacing:-.03em}
+.price span{color:var(--ink-2);font-size:14px}
+.feat{display:flex;flex-direction:column;gap:12px}
+.feat li{display:flex;align-items:center;gap:10px;color:var(--ink-2);font-size:14.5px}
+.feat .icon{width:16px;height:16px;color:var(--ink)}
+.plan-foot{padding:24px 24px 0}
+.plan-note{text-align:center;color:var(--ink-3);font-size:13.5px;margin-top:22px}
+@media(max-width:960px){.plans{grid-template-columns:1fr;max-width:520px;margin-inline:auto}}
+
+/* ═══ FAQ (Basic Accordion: chevrón, una abierta a la vez, altura animada) ═══ */
+.faq-list{max-width:760px;margin:40px auto 0;display:flex;flex-direction:column;gap:10px}
+.faq-item{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md)}
+.faq-item summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;font-weight:600;font-size:16.5px}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary .icon{color:var(--ink-3);transition:transform .25s}
+.faq-item[open] summary .icon{transform:rotate(180deg)}
+.faq-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.faq-item[open] .faq-body{grid-template-rows:1fr}
+.faq-body>div{overflow:hidden}
+.faq-body p{padding:0 22px 20px;color:var(--ink-2);font-size:15.5px}
+
+/* ═══ CTA FINAL ═══ */
+.cta-final{padding-block:0 96px}
+.cta-box{background:linear-gradient(160deg,#0B1B2E,#132C47 55%,#1B3A5F);color:#fff;border-radius:var(--r-xl);padding:64px 32px;text-align:center;position:relative;overflow:hidden}
+.cta-box::after{content:"";position:absolute;inset:auto -20% -60% -20%;height:80%;background:radial-gradient(50% 60% at 50% 100%,rgba(63,140,255,.45),transparent 70%);pointer-events:none}
+.cta-box>*{position:relative}
+.cta-box h2{font-size:clamp(28px,4vw,40px);font-weight:800}
+.cta-box p{color:rgba(255,255,255,.78);margin-top:12px;font-size:17px}
+.cta-box .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+.cta-box .btn-outline{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+.cta-box .btn-outline:hover{background:rgba(255,255,255,.1)}
+
+/* ═══ PIE (Footer Two: logo + 3 columnas + línea legal) ═══ */
+footer{background:var(--surface);border-top:1px solid var(--line);padding-block:56px 32px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px}
+.foot-brand img{height:28px;width:auto}
+.foot-brand p{color:var(--ink-2);font-size:14.5px;margin-top:14px;max-width:34ch}
+.foot-col h5{margin:0 0 14px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+.foot-col a{display:block;padding:5px 0;color:var(--ink-2);text-decoration:none;font-size:14.5px}
+.foot-col a:hover{color:var(--ink)}
+.foot-bottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:44px;padding-top:22px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3)}
+@media(max-width:860px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.foot-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ═══ MENÚ ═══ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="nav-logo" href="./" aria-label="SMYL, inicio"><img src="icons/smyl_logo.png" alt="SMYL"></a>
+    <nav class="nav-links" aria-label="Secciones">
+      <a href="#producto">Producto</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#planes">Planes</a>
+      <a href="#preguntas">Preguntas</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-ghost" href="https://app.smyldesign.ai/app.html">Iniciar sesión</a>
+      <a class="btn btn-grad" href="https://app.smyldesign.ai/app.html?registro=1">Crear mi cuenta</a>
+      <button class="nav-burger" id="nav-burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-sheet">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+  <div class="nav-sheet" id="nav-sheet">
+    <a href="#producto">Producto</a>
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#planes">Planes</a>
+    <a href="#preguntas">Preguntas</a>
+    <a class="btn btn-outline" href="https://app.smyldesign.ai/app.html">Iniciar sesión</a>
+    <a class="btn btn-grad" href="https://app.smyldesign.ai/app.html?registro=1">Crear mi cuenta</a>
+  </div>
+
+<main>
+<!-- ═══ HERO ═══ -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div class="hero-copy">
+      <span class="badge reveal"><i aria-hidden="true"></i>Hecho en México · La IA sugiere, tú decides</span>
+      <h1 id="hero-title" class="reveal d1">Tu clínica dental, <span class="grad">del primer mensaje a la cita.</span></h1>
+      <p class="sub reveal d2">SMYL responde a tus pacientes por WhatsApp, Messenger e Instagram, agenda la consulta y te deja listos el expediente, la simulación de sonrisa y la propuesta. Tú tomas la decisión clínica.</p>
+      <div class="hero-cta reveal d3">
+        <a class="btn btn-grad btn-lg" href="https://app.smyldesign.ai/app.html?registro=1">Crear mi cuenta <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-outline btn-lg" href="#como-funciona">Ver cómo funciona</a>
+      </div>
+      <p class="hero-fine reveal d3">Funciona en el navegador y en tu celular · Cancela cuando quieras</p>
+    </div>
+
+    <div class="devices reveal d4" aria-label="Vista del panel de SMYL y de una conversación de WhatsApp, con datos de ejemplo">
+      <div class="desk" aria-hidden="true">
+        <div class="desk-bar"><i></i><i></i><i></i><span></span></div>
+        <aside class="desk-side">
+          <img src="icons/smyl_logo.png" alt="">
+          <b class="on"><i></i>Inicio</b><b><i></i>Agenda</b><b><i></i>Pacientes</b><b><i></i>Chat</b><b><i></i>Cobros</b><b><i></i>Diseño de sonrisa</b>
+        </aside>
+        <div class="desk-main">
+          <h4>Buenos días, Dra. Ortega</h4>
+          <p class="date">Martes · 6 citas hoy · 2 mensajes esperan respuesta</p>
+          <div class="card">
+            <h5>Agenda de hoy</h5>
+            <div class="appt"><time>09:00</time><div>Laura M.<small>Valoración · Sillón 1</small></div><span class="chip">Confirmada</span></div>
+            <div class="appt"><time>10:30</time><div>Carlos R.<small>Limpieza · Sillón 2</small></div><span class="chip">Confirmada</span></div>
+            <div class="appt"><time>12:00</time><div>Ana P.<small>Diseño de sonrisa</small></div><span class="chip wait">Por confirmar</span></div>
+            <div class="appt"><time>16:00</time><time hidden></time><div>Jorge L.<small>Radiografía · Sillón 1</small></div><span class="chip">Confirmada</span></div>
+          </div>
+          <div class="card">
+            <h5>Esta semana</h5>
+            <div class="stat"><b>28</b><span>citas agendadas por el asistente</span></div>
+            <div class="stat"><b>4</b><span>propuestas enviadas</span></div>
+            <div class="stat"><b>92%</b><span>mensajes respondidos en menos de 1 min</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="phone-screen">
+          <div class="phone-top"><i>CO</i><div><b>Clínica Ortega</b><small>Asistente · en línea</small></div></div>
+          <div class="chat">
+            <div class="msg in">Hola, ¿tienen cita para una limpieza esta semana?<time>9:41</time></div>
+            <div class="msg out">¡Hola! Sí. Te puedo agendar con la Dra. Ortega. ¿Cuál te acomoda?<div class="slots"><span>Mié 11:00</span><span>Jue 17:30</span><span>Vie 10:00</span></div><time>9:41</time></div>
+            <div class="msg in">Jueves 17:30<time>9:42</time></div>
+            <div class="msg out">Listo, quedó tu cita el jueves a las 17:30. Te mando recordatorio un día antes. 🦷<time>9:42</time></div>
+          </div>
+        </div>
+      </div>
+      <span class="example">Datos de ejemplo</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FRANJA DE CONFIANZA ═══ -->
+<div class="trust">
+  <div class="wrap">
+    <ul>
+      <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7z"/><path d="m9 12 2 2 4-4"/></svg>La información de cada clínica, separada</li>
+      <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>Sin instalar nada</li>
+      <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3 1.5-5A7 7 0 0 1 3 13V8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>WhatsApp · Messenger · Instagram</li>
+      <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4z"/></svg>La IA propone, el profesional aprueba</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══ PILARES ═══ -->
+<section id="producto" aria-labelledby="producto-title">
+  <div class="wrap">
+    <div class="center">
+      <p class="eyebrow">Qué hace SMYL</p>
+      <h2 id="producto-title" class="h2">Todo lo que una clínica hace, en un solo lugar.</h2>
+      <p class="sub">Desde el primer mensaje hasta el cobro. Cada pieza habla con las demás, y nada clínico se decide sin ti.</p>
+    </div>
+    <div class="bento">
+      <article class="tile big">
+        <div class="bubbles" aria-hidden="true">
+          <div class="in">¿Cuánto cuesta una valoración?<small>Paciente · 20:14</small></div>
+          <div class="out">La valoración es sin costo. ¿Te agendo esta semana? Tengo jueves 17:30 o viernes 10:00.<small>Asistente · 20:14</small></div>
+          <div class="in">Viernes 10:00, por favor<small>Paciente · 20:16</small></div>
+        </div>
+        <div class="ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3 1.5-5A7 7 0 0 1 3 13V8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/><path d="M8 9h8M8 13h5"/></svg></div>
+        <h3>Mensajería con asistente de IA</h3>
+        <p>WhatsApp, Messenger e Instagram en una sola bandeja. El asistente responde dudas, propone horarios y agenda. Cuando hace falta una persona, te avisa y te pasa la conversación.</p>
+        <div class="chan"><span>WhatsApp</span><span>Messenger</span><span>Instagram</span><span>Recordatorios automáticos</span></div>
+      </article>
+      <article class="tile">
+        <div class="ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></div>
+        <h3>Agenda</h3>
+        <p>Citas, sillones y responsables sin empalmes. Confirmaciones y recordatorios salen solos.</p>
+      </article>
+      <article class="tile">
+        <div class="ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></div>
+        <h3>Expediente y Paciente 360</h3>
+        <p>Historia clínica, fotos, radiografías y evolución en una sola vista por paciente.</p>
+      </article>
+      <article class="tile">
+        <div class="ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg></div>
+        <h3>Diseño de sonrisa</h3>
+        <p>Simulación de carillas sobre la foto del paciente, lista para mostrarla en la misma consulta.</p>
+      </article>
+      <article class="tile">
+        <div class="ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6M11 8v6"/></svg></div>
+        <h3>Radiografías con IA</h3>
+        <p>Lectura asistida que señala hallazgos. El dentista confirma o corrige cada uno antes de que entre al expediente.</p>
+      </article>
+      <article class="tile">
+        <div class="ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/></svg></div>
+        <h3>Propuestas y cobros</h3>
+        <p>Presupuesto con tus precios, envío al paciente y seguimiento de lo que falta por cobrar.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CÓMO FUNCIONA ═══ -->
+<section id="como-funciona" aria-labelledby="como-title" style="background:var(--surface);border-block:1px solid var(--line)">
+  <div class="wrap steps">
+    <div class="steps-head">
+      <p class="eyebrow">Cómo funciona</p>
+      <h2 id="como-title" class="h2">De un «hola» en WhatsApp a un paciente atendido.</h2>
+      <p class="sub">Cuatro pasos. Tres de ellos ocurren sin que tengas que tocar el teléfono.</p>
+    </div>
+    <ol class="timeline">
+      <li class="step">
+        <div class="node"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3 1.5-5A7 7 0 0 1 3 13V8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg><b>1</b></div>
+        <div><h3>El paciente escribe</h3><p>El asistente responde al momento, resuelve dudas frecuentes con la información de tu clínica y propone horarios disponibles.</p></div>
+      </li>
+      <li class="step">
+        <div class="node"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="m9 15 2 2 4-4"/></svg><b>2</b></div>
+        <div><h3>Se agenda solo</h3><p>La cita queda en tu agenda con recordatorio. Si la conversación necesita a una persona, te avisa para que entres tú.</p></div>
+      </li>
+      <li class="step">
+        <div class="node"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4z"/></svg><b>3</b></div>
+        <div><h3>En consulta</h3><p>Expediente, fotos y radiografía en una vista. Simulación de sonrisa y propuesta sin salir de SMYL, para decidir juntos ahí mismo.</p></div>
+      </li>
+      <li class="step">
+        <div class="node"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><b>4</b></div>
+        <div><h3>Seguimiento</h3><p>Confirmaciones, recordatorios de pago y la siguiente cita, desde la misma conversación que ya tiene el paciente.</p></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══ IA CON CRITERIO ═══ -->
+<section class="criterio" aria-labelledby="criterio-title" style="border-top:0">
+  <div class="wrap in">
+    <div>
+      <p class="eyebrow">Inteligencia artificial con criterio clínico</p>
+      <h2 id="criterio-title" class="h2">La IA propone. El profesional aprueba.</h2>
+      <p class="sub">Cada simulación, lectura de radiografía o texto generado llega como borrador. Nada se muestra a un paciente ni entra al expediente sin que lo revises. Y lo que el asistente responde por chat sale de la información que tú configuras para tu clínica.</p>
+    </div>
+    <div class="facts">
+      <div class="fact"><div class="ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7z"/></svg></div><div><b>Separación por clínica</b><span>Cada clínica ve únicamente la información de su propia organización.</span></div></div>
+      <div class="fact"><div class="ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></div><div><b>Sin instalar nada</b><span>Funciona en el navegador de tu computadora y como app en tu celular.</span></div></div>
+      <div class="fact"><div class="ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg></div><div><b>Aviso de privacidad público</b><span>Qué datos tratamos, con quién y por cuánto tiempo, en <a href="privacidad.html">una página que cualquiera puede leer</a>.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIOS (oculto hasta tener testimonios reales y autorizados; ver script) ═══ -->
+<section class="testi" id="testimonios" aria-labelledby="testi-title" hidden>
+  <div class="wrap">
+    <div class="center">
+      <p class="eyebrow">Clínicas que ya atienden con SMYL</p>
+      <h2 id="testi-title" class="h2">Lo que dicen quienes lo usan todos los días.</h2>
+    </div>
+    <div class="testi-row" id="testi-row" aria-live="polite"></div>
+    <div class="tnav">
+      <button type="button" id="testi-prev" aria-label="Testimonio anterior"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <button type="button" id="testi-next" aria-label="Testimonio siguiente"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PLANES ═══ -->
+<section id="planes" aria-labelledby="planes-title">
+  <div class="wrap">
+    <div class="center">
+      <p class="eyebrow">Planes</p>
+      <h2 id="planes-title" class="h2">Elige tu plan. Cancela cuando quieras.</h2>
+      <p class="sub">Precios en pesos mexicanos, por clínica y por mes. Sin contratos forzosos ni permanencia mínima.</p>
+    </div>
+    <div class="plans">
+      <article class="plan">
+        <div class="plan-head"><div class="row"><h3>Esencial</h3></div><p>Para un consultorio que quiere ordenar su agenda y sus mensajes.</p></div>
+        <div class="plan-body">
+          <div class="price"><b>$399</b><span>MXN / mes</span></div>
+          <ul class="feat">
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>15 diagnósticos con IA al mes</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Agenda con recordatorios</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Expediente de pacientes</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Bandeja de mensajes con un canal</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Propuestas con tus precios</li>
+          </ul>
+        </div>
+        <div class="plan-foot"><a class="btn btn-outline btn-full" href="https://app.smyldesign.ai/app.html?registro=1&plan=esencial" aria-label="Empezar con el plan Esencial">Empezar <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      </article>
+      <article class="plan popular">
+        <div class="plan-head"><div class="row"><h3>Profesional</h3><span class="pbadge">Más popular</span></div><p>Para una clínica que atiende por WhatsApp y quiere cerrar más tratamientos.</p></div>
+        <div class="plan-body">
+          <div class="price"><b>$799</b><span>MXN / mes</span></div>
+          <ul class="feat">
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>40 diagnósticos con IA al mes</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Todo lo del plan Esencial</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>WhatsApp, Messenger e Instagram con asistente de IA</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Simulación de sonrisa</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Lectura asistida de radiografías</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Reporte y propuesta con tu logo</li>
+          </ul>
+        </div>
+        <div class="plan-foot"><a class="btn btn-primary btn-full" href="https://app.smyldesign.ai/app.html?registro=1&plan=profesional" aria-label="Empezar con el plan Profesional">Empezar <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      </article>
+      <article class="plan">
+        <div class="plan-head"><div class="row"><h3>Premium</h3></div><p>Para clínicas con varios profesionales y alto volumen de pacientes.</p></div>
+        <div class="plan-body">
+          <div class="price"><b>$1,499</b><span>MXN / mes</span></div>
+          <ul class="feat">
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>100 diagnósticos con IA al mes</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Todo lo del plan Profesional</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Notas clínicas por voz</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Varios profesionales y sillones</li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Soporte prioritario</li>
+          </ul>
+        </div>
+        <div class="plan-foot"><a class="btn btn-outline btn-full" href="https://app.smyldesign.ai/app.html?registro=1&plan=premium" aria-label="Empezar con el plan Premium">Empezar <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      </article>
+    </div>
+    <p class="plan-note">Los diagnósticos con IA incluyen análisis de fotos, lecturas de radiografía y simulaciones. Puedes cambiar de plan desde tu panel cuando quieras.</p>
+  </div>
+</section>
+
+<!-- ═══ PREGUNTAS ═══ -->
+<section id="preguntas" aria-labelledby="faq-title" style="background:var(--surface);border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="center">
+      <p class="eyebrow">Preguntas frecuentes</p>
+      <h2 id="faq-title" class="h2">Lo que suelen preguntarnos antes de empezar.</h2>
+    </div>
+    <div class="faq-list" id="faq">
+      <details class="faq-item" open>
+        <summary>¿SMYL reemplaza mi valoración clínica?<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="faq-body"><div><p>No. Las simulaciones, lecturas de radiografía y textos que genera la IA son sugerencias de apoyo. Tú las revisas, corriges y apruebas antes de usarlas con un paciente. La decisión clínica siempre es del profesional.</p></div></div>
+      </details>
+      <details class="faq-item">
+        <summary>¿Qué pasa con los datos de mis pacientes?<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="faq-body"><div><p>Cada clínica es responsable de los datos de sus pacientes y solo ve su propia información. SMYL los trata por cuenta de la clínica y no los usa para publicidad. Todo está explicado en el <a href="privacidad.html">Aviso de privacidad</a>.</p></div></div>
+      </details>
+      <details class="faq-item">
+        <summary>¿Mis pacientes hablan con un robot?<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="faq-body"><div><p>Hablan con un asistente que se presenta como tal, responde con la información de tu clínica y agenda citas. Cuando la conversación necesita a una persona, te avisa y tú continúas desde la misma bandeja.</p></div></div>
+      </details>
+      <details class="faq-item">
+        <summary>¿Necesito un número de WhatsApp nuevo?<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="faq-body"><div><p>Puedes usar un número dedicado para la clínica o, en versión beta, conservar el que ya usas en la aplicación WhatsApp Business. En ambos casos conectas el número desde la configuración de SMYL.</p></div></div>
+      </details>
+      <details class="faq-item">
+        <summary>¿Necesito instalar algo?<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="faq-body"><div><p>No. SMYL funciona desde el navegador de tu computadora o celular, y puedes agregarlo a la pantalla de inicio como una app.</p></div></div>
+      </details>
+      <details class="faq-item">
+        <summary>¿Puedo cambiar de plan o cancelar?<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="faq-body"><div><p>Sí, cuando quieras y desde tu panel. No hay contratos forzosos ni permanencia mínima; la cancelación aplica al siguiente periodo. Los detalles están en los <a href="terminos.html">Términos del servicio</a>.</p></div></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA FINAL ═══ -->
+<section class="cta-final" aria-labelledby="cta-title" style="padding-top:88px">
+  <div class="wrap">
+    <div class="cta-box">
+      <h2 id="cta-title">Empieza a atender mejor hoy.</h2>
+      <p>Crea tu cuenta, conecta tu WhatsApp y deja que el asistente agende la primera cita por ti.</p>
+      <div class="btns">
+        <a class="btn btn-grad btn-lg" href="https://app.smyldesign.ai/app.html?registro=1">Crear mi cuenta</a>
+        <a class="btn btn-outline btn-lg" href="mailto:contacto@smyldesign.ai">Hablar con nosotros</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ═══ PIE ═══ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="icons/smyl_logo.png" alt="SMYL">
+        <p>Plataforma para clínicas dentales: agenda, expediente, mensajería con IA, diseño de sonrisa, radiografías y cobros.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Producto</h5>
+        <a href="#producto">Agenda</a>
+        <a href="#producto">Mensajería con IA</a>
+        <a href="#producto">Diseño de sonrisa</a>
+        <a href="#producto">Radiografías</a>
+        <a href="#planes">Planes</a>
+      </div>
+      <div class="foot-col">
+        <h5>Empresa</h5>
+        <a href="mailto:contacto@smyldesign.ai">Contacto</a>
+        <a href="https://app.smyldesign.ai/app.html">Iniciar sesión</a>
+        <a href="https://app.smyldesign.ai/app.html?registro=1">Crear cuenta</a>
+      </div>
+      <div class="foot-col">
+        <h5>Legal</h5>
+        <a href="privacidad.html">Aviso de privacidad</a>
+        <a href="terminos.html">Términos del servicio</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 SMYL · Hecho en México</span>
+      <span>Las simulaciones y análisis con IA son orientativos; no sustituyen una valoración clínica presencial.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  // Menú fijo: borde al hacer scroll; panel en móvil.
+  var nav=document.getElementById('nav'),burger=document.getElementById('nav-burger'),sheet=document.getElementById('nav-sheet');
+  function onScroll(){nav.classList.toggle('is-scrolled',window.scrollY>8)}
+  onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+  function closeSheet(){sheet.classList.remove('open');burger.setAttribute('aria-expanded','false');burger.setAttribute('aria-label','Abrir menú');document.body.style.overflow=''}
+  burger.addEventListener('click',function(){
+    var open=!sheet.classList.contains('open');
+    sheet.classList.toggle('open',open);
+    burger.setAttribute('aria-expanded',open?'true':'false');
+    burger.setAttribute('aria-label',open?'Cerrar menú':'Abrir menú');
+    document.body.style.overflow=open?'hidden':'';
+  });
+  sheet.addEventListener('click',function(e){if(e.target.closest('a'))closeSheet()});
+  window.addEventListener('resize',function(){if(window.innerWidth>900)closeSheet()});
+
+  // FAQ: una pregunta abierta a la vez (comportamiento del acordeón).
+  var faq=document.getElementById('faq');
+  faq.addEventListener('toggle',function(e){
+    if(!e.target.open)return;
+    faq.querySelectorAll('details[open]').forEach(function(d){if(d!==e.target)d.open=false});
+  },true);
+
+  // Testimonios: port de "Testimonial Section 3". La sección permanece oculta mientras la lista
+  // esté vacía; se llena solo con testimonios reales y autorizados por escrito.
+  var testimonios=[];
+  var sec=document.getElementById('testimonios'),row=document.getElementById('testi-row');
+  if(testimonios.length>=3){
+    sec.hidden=false;
+    var idx=1;
+    function initials(n){return n.split(/\s+/).slice(0,2).map(function(p){return p[0]||''}).join('').toUpperCase()}
+    function card(t,pos){
+      var el=document.createElement('article');
+      el.className='tcard '+(pos==='center'?'center':'side '+pos);
+      el.innerHTML='<div class="q">“'+t.quote+'”</div><div class="who"><div class="av" aria-hidden="true">'+initials(t.name)+'</div><div><b>'+t.name+'</b><span>'+t.role+'</span></div></div>';
+      return el;
+    }
+    function render(){
+      var n=testimonios.length,L=(idx-1+n)%n,R=(idx+1)%n;
+      row.innerHTML='';
+      row.appendChild(card(testimonios[L],'left'));
+      var g1=document.createElement('div');g1.className='gap';row.appendChild(g1);
+      row.appendChild(card(testimonios[idx],'center'));
+      var g2=document.createElement('div');g2.className='gap';row.appendChild(g2);
+      row.appendChild(card(testimonios[R],'right'));
+    }
+    function next(){idx=(idx+1)%testimonios.length;render()}
+    function prev(){idx=(idx-1+testimonios.length)%testimonios.length;render()}
+    document.getElementById('testi-next').addEventListener('click',next);
+    document.getElementById('testi-prev').addEventListener('click',prev);
+    window.addEventListener('keydown',function(e){if(e.key==='ArrowRight')next();else if(e.key==='ArrowLeft')prev()});
+    render();
+  }
+})();
+</script>
+</body>
+</html>
